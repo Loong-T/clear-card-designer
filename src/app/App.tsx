@@ -424,11 +424,7 @@ function App() {
             rel="noopener noreferrer"
             className="text-[#7b8a97] hover:text-[#4b5563] transition-colors flex items-end"
           >
-            <img
-              alt="GitHub"
-              className="h-3 w-3 object-contain opacity-50"
-              src={githubIcon}
-            />
+            <img alt="GitHub" className="h-3 w-3 object-contain opacity-50" src={githubIcon} />
           </a>
         </div>
         <nav className="flex gap-2" aria-label="编辑工具">

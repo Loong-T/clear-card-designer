@@ -43,6 +43,8 @@ pnpm install
 pnpm dev
 ```
 
+安装后，Git hooks 会自动设置，每次提交代码时会自动格式化暂存区文件。
+
 常用检查与构建命令：
 
 ```bash
