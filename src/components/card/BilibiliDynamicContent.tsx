@@ -8,7 +8,7 @@ import goldAvatarBadge from "../../assets/bilibili-dynamic/images/avatar-badge-g
 import defaultAvatarDecoration from "../../assets/bilibili-dynamic/images/avatar-decoration.png";
 import defaultAvatarFace from "../../assets/bilibili-dynamic/images/avatar-face.jpg";
 import defaultFansBadge from "../../assets/bilibili-dynamic/images/fans-badge.png";
-import bilibiliLogo from "../../assets/icons/logo-bilibili-pink.png";
+import bilibiliLogo from "../../assets/bilibili-dynamic/images/logo-bilibili-pink.png";
 import type { CardContent } from "../../types/editor";
 
 function AvatarBlock({ content }: { content: CardContent }) {

@@ -1,4 +1,5 @@
 import { ImagePlus, RotateCcw, Type } from "lucide-react";
+import githubIcon from "../assets/icons/github.svg";
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
 import { flushSync } from "react-dom";
 
@@ -414,8 +415,21 @@ function App() {
         </div>
       ) : null}
       <header className="flex items-center justify-between gap-6 border-b border-(--border) bg-white px-6 py-[18px]">
-        <div>
-          <h1 className="mb-1 text-sm font-bold uppercase text-[#7b8a97]">透卡生成器</h1>
+        <div className="flex items-baseline gap-2">
+          <h1 className="text-sm font-bold uppercase text-[#7b8a97]">透卡生成器</h1>
+          <span className="text-xs text-[#9ca3af]">v0.1.0</span>
+          <a
+            href="https://github.com/Loong-T/clear-card-designer"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[#7b8a97] hover:text-[#4b5563] transition-colors flex items-end"
+          >
+            <img
+              alt="GitHub"
+              className="h-3 w-3 object-contain opacity-50"
+              src={githubIcon}
+            />
+          </a>
         </div>
         <nav className="flex gap-2" aria-label="编辑工具">
           <input

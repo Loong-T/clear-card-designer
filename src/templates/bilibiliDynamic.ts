@@ -18,7 +18,7 @@ export const defaultContent: CardContent = {
   badgeText: "000001",
   badgeTextColor: "#b97cb5",
   badgeImageUrl: "",
-  body: "周表",
+  body: "你才是憨憨",
   cardRadius: 0,
   commentCount: "158",
   likeCount: "822",

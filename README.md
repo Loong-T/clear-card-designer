@@ -2,7 +2,25 @@
 
 透卡生成器。项目目标是通过本地网页编辑透卡内容、图片图层、尺寸和导出参数，并生成带透明区域的 PNG。
 
-## 当前能力
+![Clear Card Designer 编辑界面](docs/images/editor-overview.jpg)
+
+## 快速使用
+
+1. 从 [GitHub Releases](https://github.com/Loong-T/clear-card-designer/releases) 下载最新的
+   `clear-card-designer-*-offline.zip`。
+2. 解压 ZIP，双击其中的 `index.html`。
+3. 选择哔哩哔哩动态模板或空白画布，并设置成品尺寸。
+4. 编辑模板内容，或通过顶部工具栏添加图片和文字图层。
+5. 调整图层位置、大小、旋转、透明度和层级。
+6. 点击左侧的“导出成品图片”下载透明 PNG。
+
+整个编辑和导出过程均在浏览器本地完成，不会上传图片或编辑内容。无需安装 Node.js、
+启动本地服务器或连接网络。
+
+建议使用最新版桌面 Chrome 或 Edge。读取本机字体需要浏览器支持并由用户授权；不可用时，
+编辑器会继续使用当前字体和系统字体降级，不影响其他功能。
+
+## 功能
 
 - B 站动态风格竖版模板
 - 多图片图层上传、拖拽、缩放、旋转、镜像、层级调整
@@ -11,29 +29,37 @@
 - 纯图片模式：常见竖版比例和自定义像素尺寸
 - 通过 `dom-to-image-more` 导出透明 PNG
 
-## 开发命令
+## 开发与构建
+
+开发环境需要：
+
+- Node.js 22
+- pnpm 10.30.2
+
+安装依赖并启动开发服务器：
 
 ```bash
 pnpm install
 pnpm dev
-pnpm check
-pnpm test
 ```
 
-## 离线使用与分发
+常用检查与构建命令：
 
-运行 `pnpm build` 后，生产构建会生成单文件 `dist/index.html`。该文件已内联运行所需的
-JavaScript、CSS、图片和 SVG，可以直接复制、压缩分发；用户解压后双击
-`index.html` 即可离线使用，无需安装 Node.js 或启动本地服务器。
+```bash
+pnpm check
+pnpm test
+pnpm build
+```
 
-构建结束后会自动校验 `dist/` 仅包含单文件 HTML，且产物中不存在外部资源引用。
+`pnpm check` 会依次执行格式检查、Lint 和生产构建。`pnpm build` 会生成并校验可直接分发的
+`dist/index.html`。
 
-建议使用最新版桌面 Chrome 或 Edge。读取本机字体需要浏览器支持并由用户授权；不可用时，
-编辑器会继续使用当前字体和系统字体降级，不影响其他功能。
+生产构建会将运行所需的 JavaScript、CSS、图片和 SVG 全部内联到单文件 HTML。构建结束后
+会自动确认 `dist/` 仅包含 `index.html`，且产物中不存在外部资源引用。
 
 ## CI 与发布
 
-推送到 `main` 分支或创建面向 `main` 的 Pull Request 时，GitHub Actions 会自动运行
+推送到 `main` 分支或创建目标为 `main` 的 Pull Request 时，GitHub Actions 会自动运行
 `pnpm check` 和 `pnpm test`。
 
 正式发布时，先将 `package.json` 中的版本号更新为目标版本，再推送同版本的
@@ -42,9 +68,8 @@ ZIP 包及 SHA-256 校验文件，并自动发布到 GitHub Releases。
 
 ## 素材版权
 
-`src/assets` 下与哔哩哔哩相关的 Logo、图标、装饰及图片素材，其版权及相关权利归
-哔哩哔哩所有，不包含在本项目的 MIT 许可证授权范围内。本项目与哔哩哔哩无隶属、授权或
-官方合作关系，相关素材仅用于实现模板展示效果。
+- `src/assets/bilibili-dynamic/` 下的 Logo、图标、装饰及图片素材，其版权及相关权利归哔哩哔哩所有，不包含在本项目的 MIT 许可证授权范围内。本项目与哔哩哔哩无隶属、授权或官方合作关系，相关素材仅用于实现模板展示效果。
+- `src/assets/icons/github.svg` 归 [Simple Icons](https://simpleicons.org/) 所有，使用 CC0 许可证。
 
 ## 项目结构
 
