@@ -1,0 +1,12 @@
+.DS_Store
+dist/
+release/
+node_modules/
+.pnpm-store/
+
+*.local
+.env
+.env.*
+
+node_modules/.tmp/
+*.tsbuildinfo
