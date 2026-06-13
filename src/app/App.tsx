@@ -417,7 +417,7 @@ function App() {
       <header className="flex items-center justify-between gap-6 border-b border-(--border) bg-white px-6 py-[18px]">
         <div className="flex items-baseline gap-2">
           <h1 className="text-sm font-bold uppercase text-[#7b8a97]">透卡生成器</h1>
-          <span className="text-xs text-[#9ca3af]">v0.1.0</span>
+          <span className="text-xs text-[#9ca3af]">v{__APP_VERSION__}</span>
           <a
             href="https://github.com/Loong-T/clear-card-designer"
             target="_blank"

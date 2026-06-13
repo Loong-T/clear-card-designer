@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+### Fixed
+
+- 页面显示的版本号改为自动读取 `package.json`，避免发布时遗漏同步。
+- 统一仓库文本文件使用 LF，避免 Windows 工作区因 CRLF 导致格式检查失败。
+
 ## 0.1.1 - 2026-06-13
 
 ### Fixed
