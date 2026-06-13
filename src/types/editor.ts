@@ -75,7 +75,6 @@ export type TextLayer = {
   shadowOffsetX: number;
   shadowOffsetY: number;
   shadowOpacity: number;
-  textDecoration: "none" | "underline";
   align: "left" | "center" | "right";
 };
 
@@ -85,7 +84,7 @@ export const defaultTextLayerProps: Omit<
 > = {
   align: "center",
   color: "#18191c",
-  fontFamily: "Arial",
+  fontFamily: "",
   fontSize: 24,
   fontStyle: "normal",
   fontWeight: 400,
@@ -101,7 +100,6 @@ export const defaultTextLayerProps: Omit<
   shadowOpacity: 0.45,
   strokeColor: "#ffffff",
   strokeWidth: 0,
-  textDecoration: "none",
   visible: true,
 };
 
@@ -124,7 +122,16 @@ export type CardContent = {
   badgeTextColor: string;
   badgeImageUrl: string;
   body: string;
+  cardFontFamily: string;
+  cardFontStyle: "normal" | "italic";
+  cardFontWeight: number;
+  cardLetterSpacing: number;
   cardRadius: number;
+  cardTextShadowBlur: number;
+  cardTextShadowColor: string;
+  cardTextShadowEnabled: boolean;
+  cardTextShadowOffsetX: number;
+  cardTextShadowOffsetY: number;
   commentCount: string;
   likeCount: string;
   logoUrl: string;

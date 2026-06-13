@@ -131,6 +131,17 @@ button {
   pointer-events: none;
 }
 
+.card-structured-content :where(p, span, div):not([data-independent-font]) {
+  font-style: var(--card-font-style, normal);
+  letter-spacing: var(--card-letter-spacing, 0);
+  text-shadow: var(--card-text-shadow, none);
+}
+
+.card-structured-content[data-card-force-weight="true"]
+  :where(p, span, div):not([data-independent-font]) {
+  font-weight: var(--card-font-weight, 400);
+}
+
 .template-option {
   display: flex;
   width: 100%;

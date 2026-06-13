@@ -9,7 +9,10 @@ import defaultAvatarDecoration from "../../assets/bilibili-dynamic/images/avatar
 import defaultAvatarFace from "../../assets/bilibili-dynamic/images/avatar-face.jpg";
 import defaultFansBadge from "../../assets/bilibili-dynamic/images/fans-badge.png";
 import bilibiliLogo from "../../assets/bilibili-dynamic/images/logo-bilibili-pink.png";
+import type { CSSProperties } from "react";
+
 import type { CardContent } from "../../types/editor";
+import { getCssFontFamily } from "../../utils/fonts";
 
 function AvatarBlock({ content }: { content: CardContent }) {
   const avatarUrl = content.avatarUrl || defaultAvatarFace;
@@ -37,8 +40,7 @@ function AvatarBlock({ content }: { content: CardContent }) {
 
 function AuthorHeader({ content }: { content: CardContent }) {
   const badgeImageUrl = content.badgeImageUrl || defaultFansBadge;
-  const selectedBadgeFont = content.badgeFontFamily.replaceAll("\\", "\\\\").replaceAll('"', '\\"');
-  const badgeFontFamily = `"${selectedBadgeFont}", "DIN Alternate", "Arial Narrow", Arial, sans-serif`;
+  const badgeFontFamily = getCssFontFamily(content.badgeFontFamily);
 
   return (
     <div className="flex h-16 min-w-0 flex-1 items-center gap-1">
@@ -59,14 +61,17 @@ function AuthorHeader({ content }: { content: CardContent }) {
             style={{ height: `${content.badgeImageHeight}px` }}
           />
           <span
+            data-independent-font
             className="absolute inset-y-0 left-0 flex w-[110%] items-center justify-center text-center leading-none"
             style={{
               color: content.badgeTextColor,
               fontFamily: badgeFontFamily,
               fontSize: `${content.badgeFontSize}px`,
+              fontStyle: "normal",
               fontSynthesis: "weight",
               fontWeight: content.badgeFontWeight,
               letterSpacing: `${content.badgeLetterSpacing}px`,
+              textShadow: "none",
             }}
           >
             {content.badgeText}
@@ -102,9 +107,25 @@ function EngagementBar({ content }: { content: CardContent }) {
 
 export function BilibiliDynamicContent({ content }: { content: CardContent }) {
   const logoUrl = content.logoUrl || bilibiliLogo;
+  const cardFontFamily = getCssFontFamily(content.cardFontFamily);
+  const cardTextShadow = content.cardTextShadowEnabled
+    ? `${content.cardTextShadowOffsetX}px ${content.cardTextShadowOffsetY}px ${content.cardTextShadowBlur}px ${content.cardTextShadowColor}`
+    : "none";
 
   return (
-    <div className="relative z-3 flex min-h-0 flex-1 flex-col text-[#61666d] pointer-events-none">
+    <div
+      className="card-structured-content relative z-3 flex min-h-0 flex-1 flex-col text-[#61666d] pointer-events-none"
+      data-card-force-weight={content.cardFontWeight > 0}
+      style={
+        {
+          "--card-font-style": content.cardFontStyle,
+          "--card-font-weight": content.cardFontWeight,
+          "--card-letter-spacing": `${content.cardLetterSpacing}px`,
+          "--card-text-shadow": cardTextShadow,
+          fontFamily: cardFontFamily,
+        } as CSSProperties
+      }
+    >
       <div
         className="shrink-0"
         style={{ backgroundColor: `rgba(255, 255, 255, ${content.panelOpacity})` }}

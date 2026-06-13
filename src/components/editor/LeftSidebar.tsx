@@ -12,6 +12,7 @@ import type {
   TemplateId,
 } from "../../types/editor";
 import { defaultTextLayerProps, DYNAMIC_CONTENT_LAYER_ID } from "../../types/editor";
+import { CardTypographySettings } from "./CardTypographySettings";
 import { DocumentSettings } from "./DocumentSettings";
 import { LayerRow } from "./LayerRow";
 import { PanelSectionTitle } from "./PanelSectionTitle";
@@ -192,6 +193,12 @@ export function LeftSidebar({
             onUpdatePreviewSettings={onUpdatePreviewSettings}
           />
         </div>
+
+        {templateId === "bilibili-dynamic" ? (
+          <div className="mt-3 first:mt-0">
+            <CardTypographySettings content={content} onUpdateContent={onUpdateContent} />
+          </div>
+        ) : null}
 
         <p className="my-4 rounded-md border border-[#d7f1fb] bg-[#f1fbff] p-3 text-xs font-bold leading-relaxed text-[#007aa6]">
           {outputDescription}

@@ -3,6 +3,7 @@ import { useEffect, useRef } from "react";
 import { Text, Transformer } from "react-konva";
 
 import type { EditorLayerUpdate, TextLayer } from "../../types/editor";
+import { getCssFontFamily } from "../../utils/fonts";
 
 type EditableTextLayerProps = {
   layer: TextLayer;
@@ -35,7 +36,7 @@ export function EditableTextLayer({
         align={layer.align}
         draggable
         fill={layer.color}
-        fontFamily={layer.fontFamily}
+        fontFamily={getCssFontFamily(layer.fontFamily)}
         fontSize={layer.fontSize}
         fontStyle={
           `${layer.fontWeight >= 700 ? "bold" : ""} ${layer.fontStyle === "italic" ? "italic" : ""}`.trim() ||
@@ -58,7 +59,6 @@ export function EditableTextLayer({
         stroke={layer.strokeColor}
         strokeWidth={layer.strokeWidth}
         text={layer.text}
-        textDecoration={layer.textDecoration}
         verticalAlign="middle"
         visible={layer.visible}
         width={layer.width}

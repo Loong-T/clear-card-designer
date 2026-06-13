@@ -1,5 +1,4 @@
 import { FlipHorizontal, FlipVertical, RotateCcw, Trash2 } from "lucide-react";
-import { useRef, useState } from "react";
 
 import blueAvatarBadge from "../../assets/bilibili-dynamic/images/avatar-badge-blue.png";
 import goldAvatarBadge from "../../assets/bilibili-dynamic/images/avatar-badge-gold.png";
@@ -13,6 +12,8 @@ import type {
 import { AssetUploadControl } from "./AssetUploadControl";
 import { ContentSection } from "./ContentSection";
 import { ContentPartTitle } from "./ContentPartTitle";
+import { FontEffectSupportHint } from "./FontEffectSupportHint";
+import { FontFamilySelect } from "./FontFamilySelect";
 import {
   checkboxClass,
   colorInputClass,
@@ -26,26 +27,7 @@ import {
   textareaClass,
   ToggleRow,
 } from "./ui";
-
-const preferredFontFamilyOrder = [
-  "D-DIN",
-  "Bahnschrift",
-  "DIN Alternate",
-  "DIN Condensed",
-  "Eurostile",
-  "Square 721",
-  "Orbitron",
-  "Arial Narrow",
-  "Helvetica Neue",
-  "Segoe UI",
-  "Roboto",
-  "Arial",
-  "PingFang SC",
-  "Microsoft YaHei",
-  "Hiragino Sans GB",
-  "Noto Sans CJK SC",
-  "Noto Sans SC",
-];
+import { useLocalFonts } from "./useLocalFonts";
 
 function getFiniteValue(value: number, fallback: number) {
   return Number.isFinite(value) ? value : fallback;
@@ -74,48 +56,7 @@ export function InspectorPanel({
   onUploadContentAsset,
   onUpdateLayer,
 }: InspectorPanelProps) {
-  const [localFontFamilies, setLocalFontFamilies] = useState<string[]>([]);
-  const [localFontStatus, setLocalFontStatus] = useState("");
-  const localFontsRequestedRef = useRef(false);
-  const badgeFontOptions =
-    localFontFamilies.length > 0 ? localFontFamilies : [content.badgeFontFamily];
-
-  const loadLocalFonts = async () => {
-    if (localFontsRequestedRef.current) {
-      return;
-    }
-
-    localFontsRequestedRef.current = true;
-
-    if (!window.queryLocalFonts) {
-      setLocalFontStatus("当前浏览器不支持读取本机字体");
-      return;
-    }
-
-    try {
-      const fonts = await window.queryLocalFonts();
-      const availableFamilies = Array.from(
-        new Set(fonts.map((font) => font.family).filter(Boolean)),
-      ).sort((left, right) => left.localeCompare(right, "zh-CN"));
-      const familySet = new Set(availableFamilies);
-      const preferredFamilies = preferredFontFamilyOrder.filter((family) => familySet.has(family));
-      const preferredFamilySet = new Set(preferredFamilies);
-      const families = [
-        ...preferredFamilies,
-        ...availableFamilies.filter((family) => !preferredFamilySet.has(family)),
-      ];
-
-      setLocalFontFamilies(families);
-      setLocalFontStatus("");
-
-      if (!familySet.has(content.badgeFontFamily) && families[0]) {
-        onUpdateContent({ badgeFontFamily: families[0] });
-      }
-    } catch {
-      localFontsRequestedRef.current = false;
-      setLocalFontStatus("未获得本机字体读取权限");
-    }
-  };
+  const { loadLocalFonts, localFontFamilies, localFontStatus } = useLocalFonts();
 
   return (
     <aside
@@ -143,25 +84,16 @@ export function InspectorPanel({
                 <ControlGrid>
                   <FormLabel>
                     字体
-                    <select
-                      className={selectClass}
+                    <FontFamilySelect
+                      localFontFamilies={localFontFamilies}
                       value={selectedLayer.fontFamily}
-                      onFocus={loadLocalFonts}
-                      onPointerDown={loadLocalFonts}
-                      onChange={(event) =>
+                      onChange={(fontFamily) =>
                         onUpdateLayer(selectedLayer.id, {
-                          fontFamily: event.target.value,
+                          fontFamily,
                         })
                       }
-                    >
-                      {Array.from(new Set([selectedLayer.fontFamily, ...badgeFontOptions])).map(
-                        (fontFamily) => (
-                          <option key={fontFamily} value={fontFamily}>
-                            {fontFamily}
-                          </option>
-                        ),
-                      )}
-                    </select>
+                      onLoadLocalFonts={loadLocalFonts}
+                    />
                   </FormLabel>
                   <FormLabel>
                     字体大小
@@ -269,21 +201,7 @@ export function InspectorPanel({
                     <span>斜体</span>
                   </ToggleRow>
                 </ControlGrid>
-                <ControlGrid className="mt-3">
-                  <ToggleRow>
-                    <input
-                      className={checkboxClass}
-                      checked={selectedLayer.textDecoration === "underline"}
-                      type="checkbox"
-                      onChange={(event) =>
-                        onUpdateLayer(selectedLayer.id, {
-                          textDecoration: event.target.checked ? "underline" : "none",
-                        })
-                      }
-                    />
-                    <span>下划线</span>
-                  </ToggleRow>
-                </ControlGrid>
+                <FontEffectSupportHint />
 
                 <div className="mt-5 border-t border-(--border) pt-4">
                   <ContentPartTitle>文字描边</ContentPartTitle>
@@ -682,19 +600,12 @@ export function InspectorPanel({
               </FormLabel>
               <FormLabel>
                 文字字体
-                <select
-                  className={selectClass}
+                <FontFamilySelect
+                  localFontFamilies={localFontFamilies}
                   value={content.badgeFontFamily}
-                  onFocus={loadLocalFonts}
-                  onChange={(event) => onUpdateContent({ badgeFontFamily: event.target.value })}
-                  onPointerDown={loadLocalFonts}
-                >
-                  {badgeFontOptions.map((fontFamily) => (
-                    <option key={fontFamily} value={fontFamily}>
-                      {fontFamily}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(badgeFontFamily) => onUpdateContent({ badgeFontFamily })}
+                  onLoadLocalFonts={loadLocalFonts}
+                />
               </FormLabel>
             </ControlGrid>
             {localFontStatus ? <p className={hintClass}>{localFontStatus}</p> : null}
@@ -759,6 +670,7 @@ export function InspectorPanel({
                 <span>加粗</span>
               </ToggleRow>
             </ControlGrid>
+            <FontEffectSupportHint />
             <div className="mt-5 border-t border-(--border) pt-4">
               <AssetUploadControl
                 assetKey="badgeImageUrl"
