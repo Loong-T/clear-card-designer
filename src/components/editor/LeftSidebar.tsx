@@ -11,10 +11,23 @@ import type {
   PreviewSettings,
   TemplateId,
 } from "../../types/editor";
+import { defaultTextLayerProps, DYNAMIC_CONTENT_LAYER_ID } from "../../types/editor";
 import { DocumentSettings } from "./DocumentSettings";
 import { LayerRow } from "./LayerRow";
 import { PanelSectionTitle } from "./PanelSectionTitle";
 import { FormLabel, selectClass } from "./ui";
+
+const dynamicContentLayer: EditorLayer = {
+  ...defaultTextLayerProps,
+  height: 0,
+  id: DYNAMIC_CONTENT_LAYER_ID,
+  name: "动态信息",
+  text: "",
+  type: "text",
+  width: 0,
+  x: 0,
+  y: 0,
+};
 
 type LeftSidebarProps = {
   content: CardContent;
@@ -63,6 +76,14 @@ export function LeftSidebar({
   const [dropTargetLayerId, setDropTargetLayerId] = useState<string | null>(null);
   const [editingLayerId, setEditingLayerId] = useState<string | null>(null);
   const [editingLayerName, setEditingLayerName] = useState("");
+  const orderedLayers = layerOrder.map((id, index) => ({
+    id,
+    index,
+    layer:
+      id === DYNAMIC_CONTENT_LAYER_ID
+        ? dynamicContentLayer
+        : layers.find((layer) => layer.id === id),
+  }));
 
   const startRenamingLayer = (layer: EditorLayer) => {
     setEditingLayerId(layer.id);
@@ -103,67 +124,60 @@ export function LeftSidebar({
 
         <div className="mt-3 first:mt-0">
           <PanelSectionTitle>图层</PanelSectionTitle>
-          {layers.length === 0 ? (
+          {orderedLayers.every(({ layer }) => !layer) ? (
             <p className="pt-4 text-[13px] leading-relaxed text-(--font-muted)">
               还没有自定义图层，请使用顶部工具栏添加图片或文字
             </p>
           ) : null}
-          {layerOrder
-            .map((id, index) => ({
-              id,
-              index,
-              layer: layers.find((layer) => layer.id === id),
-            }))
-            .reverse()
-            .map(({ id, layer, index }) =>
-              layer ? (
-                <LayerRow
-                  editingLayerId={editingLayerId}
-                  editingLayerName={editingLayerName}
-                  isActive={selectedLayerId === id}
-                  isDropTarget={dropTargetLayerId === id}
-                  key={id}
-                  layer={layer}
-                  layerIndex={index}
-                  onCommitName={commitLayerName}
-                  onDragEnd={() => {
-                    setDraggedLayerId(null);
-                    setDropTargetLayerId(null);
-                  }}
-                  onDragOver={(event) => {
-                    event.preventDefault();
-                    if (draggedLayerId && draggedLayerId !== id) {
-                      setDropTargetLayerId(id);
-                    }
-                  }}
-                  onDragStart={(event, layerId) => {
-                    event.dataTransfer.effectAllowed = "move";
-                    event.dataTransfer.setData("text/plain", layerId);
-                    setDraggedLayerId(layerId);
-                  }}
-                  onDrop={(event, layerId) => {
-                    event.preventDefault();
-                    const sourceId = event.dataTransfer.getData("text/plain") || draggedLayerId;
-                    if (sourceId) {
-                      onReorderLayer(sourceId, layerId);
-                    }
-                    setDraggedLayerId(null);
-                    setDropTargetLayerId(null);
-                  }}
-                  onEditingNameChange={setEditingLayerName}
-                  onKeyDown={(event, layer) => {
-                    if (event.key === "Enter") {
-                      commitLayerName(layer);
-                    } else if (event.key === "Escape") {
-                      setEditingLayerId(null);
-                    }
-                  }}
-                  onSelect={onSelectLayer}
-                  onStartRename={startRenamingLayer}
-                  onToggleVisibility={(layerId, visible) => onUpdateLayer(layerId, { visible })}
-                />
-              ) : null,
-            )}
+          {orderedLayers.reverse().map(({ id, layer, index }) =>
+            layer ? (
+              <LayerRow
+                editingLayerId={editingLayerId}
+                editingLayerName={editingLayerName}
+                isActive={selectedLayerId === id}
+                isDropTarget={dropTargetLayerId === id}
+                key={id}
+                layer={layer}
+                layerIndex={index}
+                onCommitName={commitLayerName}
+                onDragEnd={() => {
+                  setDraggedLayerId(null);
+                  setDropTargetLayerId(null);
+                }}
+                onDragOver={(event) => {
+                  event.preventDefault();
+                  if (draggedLayerId && draggedLayerId !== id) {
+                    setDropTargetLayerId(id);
+                  }
+                }}
+                onDragStart={(event, layerId) => {
+                  event.dataTransfer.effectAllowed = "move";
+                  event.dataTransfer.setData("text/plain", layerId);
+                  setDraggedLayerId(layerId);
+                }}
+                onDrop={(event, layerId) => {
+                  event.preventDefault();
+                  const sourceId = event.dataTransfer.getData("text/plain") || draggedLayerId;
+                  if (sourceId) {
+                    onReorderLayer(sourceId, layerId);
+                  }
+                  setDraggedLayerId(null);
+                  setDropTargetLayerId(null);
+                }}
+                onEditingNameChange={setEditingLayerName}
+                onKeyDown={(event, layer) => {
+                  if (event.key === "Enter") {
+                    commitLayerName(layer);
+                  } else if (event.key === "Escape") {
+                    setEditingLayerId(null);
+                  }
+                }}
+                onSelect={onSelectLayer}
+                onStartRename={startRenamingLayer}
+                onToggleVisibility={(layerId, visible) => onUpdateLayer(layerId, { visible })}
+              />
+            ) : null,
+          )}
         </div>
 
         <div className="mt-3 first:mt-0">

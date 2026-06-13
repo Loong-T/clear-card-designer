@@ -92,7 +92,7 @@ export function LayerRow({
           </span>
         </button>
       )}
-      {!isEditing ? (
+      {!isEditing && !isDynamicContent ? (
         <button
           aria-label={layer.visible ? `隐藏图层 ${layer.name}` : `显示图层 ${layer.name}`}
           className="grid w-6 h-6 flex-none place-items-center p-0 border-0 rounded text-(--font-muted) bg-transparent hover:text-(--accent) hover:bg-white"
@@ -107,7 +107,7 @@ export function LayerRow({
           )}
         </button>
       ) : null}
-      {!isEditing ? (
+      {!isEditing && !isDynamicContent ? (
         <button
           aria-label={`重命名图层 ${layer.name}`}
           className="grid w-6 h-6 flex-none place-items-center p-0 border-0 rounded text-(--font-muted) bg-transparent hover:text-(--accent) hover:bg-white"
