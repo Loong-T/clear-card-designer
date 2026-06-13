@@ -4,22 +4,32 @@ on:
   push:
     tags:
       - "v*.*.*"
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to rebuild and publish
+        required: true
+        type: string
 
 permissions:
   contents: write
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 jobs:
   release:
     name: Build and publish release
     runs-on: ubuntu-latest
+    env:
+      RELEASE_TAG: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.ref_name }}
 
     steps:
       - name: Checkout
         uses: actions/checkout@v6
+        with:
+          ref: ${{ env.RELEASE_TAG }}
 
       - name: Set up pnpm
         uses: pnpm/action-setup@v6
@@ -36,7 +46,7 @@ jobs:
       - name: Verify version tag
         run: |
           PACKAGE_VERSION="$(node -p "require('./package.json').version")"
-          TAG_VERSION="${GITHUB_REF_NAME#v}"
+          TAG_VERSION="${RELEASE_TAG#v}"
           if [ "$PACKAGE_VERSION" != "$TAG_VERSION" ]; then
             echo "Tag version $TAG_VERSION does not match package.json version $PACKAGE_VERSION"
             exit 1
@@ -50,7 +60,7 @@ jobs:
       - name: Package offline HTML
         run: |
           mkdir -p release
-          ARCHIVE="clear-card-designer-${GITHUB_REF_NAME#v}-offline.zip"
+          ARCHIVE="clear-card-designer-${RELEASE_TAG#v}-offline.zip"
           (
             cd dist
             zip "../release/$ARCHIVE" index.html
@@ -61,17 +71,50 @@ jobs:
           )
           unzip -t "release/$ARCHIVE"
 
+      - name: Extract release notes
+        run: |
+          VERSION="${RELEASE_TAG#v}"
+          awk -v version="$VERSION" '
+            BEGIN {
+              heading = "## " version
+            }
+            $0 == heading || index($0, heading " - ") == 1 {
+              found = 1
+              next
+            }
+            found && /^## / {
+              exit
+            }
+            found {
+              print
+            }
+            END {
+              if (!found) {
+                exit 1
+              }
+            }
+          ' CHANGELOG.md > release/release-notes.md
+
+          if [ ! -s release/release-notes.md ]; then
+            echo "CHANGELOG.md does not contain release notes for $VERSION"
+            exit 1
+          fi
+
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          ARCHIVE="clear-card-designer-${GITHUB_REF_NAME#v}-offline.zip"
-          if ! gh release view "$GITHUB_REF_NAME" >/dev/null 2>&1; then
-            gh release create "$GITHUB_REF_NAME" \
-              --generate-notes \
-              --title "$GITHUB_REF_NAME"
+          ARCHIVE="clear-card-designer-${RELEASE_TAG#v}-offline.zip"
+          if gh release view "$RELEASE_TAG" >/dev/null 2>&1; then
+            gh release edit "$RELEASE_TAG" \
+              --notes-file release/release-notes.md \
+              --title "$RELEASE_TAG"
+          else
+            gh release create "$RELEASE_TAG" \
+              --notes-file release/release-notes.md \
+              --title "$RELEASE_TAG"
           fi
-          gh release upload "$GITHUB_REF_NAME" \
+          gh release upload "$RELEASE_TAG" \
             "release/$ARCHIVE" \
             "release/$ARCHIVE.sha256" \
             --clobber

@@ -64,9 +64,11 @@ pnpm build
 推送到 `main` 分支或创建目标为 `main` 的 Pull Request 时，GitHub Actions 会自动运行
 `pnpm check` 和 `pnpm test`。
 
-正式发布时，先将 `package.json` 中的版本号更新为目标版本，再推送同版本的
-`vX.Y.Z` 标签。Release 工作流会构建并验证单文件网页，生成仅包含 `index.html` 的离线
-ZIP 包及 SHA-256 校验文件，并自动发布到 GitHub Releases。
+正式发布时，先将 `CHANGELOG.md` 中的 `Unreleased` 内容整理为带日期的目标版本章节，并将
+`package.json` 中的版本号更新为目标版本，再推送同版本的 `vX.Y.Z` 标签。Release 工作流会
+构建并验证单文件网页，生成仅包含 `index.html` 的离线 ZIP 包及 SHA-256 校验文件，并将
+CHANGELOG 中对应版本的实际发版内容自动写入 GitHub Release。需要重新构建或修正已有
+Release 时，可手动运行 Release 工作流并指定现有版本标签。
 
 ## 素材版权
 

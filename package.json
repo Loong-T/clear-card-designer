@@ -1,7 +1,7 @@
 {
   "name": "clear-card-designer",
   "private": true,
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "可离线使用的透卡编辑与透明 PNG 导出工具",
   "license": "MIT",
   "repository": {
